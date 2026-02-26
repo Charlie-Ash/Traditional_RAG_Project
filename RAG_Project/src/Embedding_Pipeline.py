@@ -1,17 +1,17 @@
 from typing import List, Any
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer  # For embedding
+from sentence_transformers import SentenceTransformer  # For embedding (with embedding model)
 import numpy as np
 from Data_Ingestion_Pipeline import find_all_files
 
 class EmbeddingPipeline:
 
-    def __init__(self, model_name: str =  "all-MiniLM-L6-v2", chunk_size: int = 1000, chunk_overlap: int = 200):  # Constructor
+    def __init__(self, embedding_model_name: str =  "all-MiniLM-L6-v2", chunk_size: int = 400, chunk_overlap: int = 80):  # Constructor
         
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
-        self.model = SentenceTransformer(model_name)
-        print(f"[INFO] Loaded embedding model: {model_name}")
+        self.model = SentenceTransformer(embedding_model_name)
+        print(f"[INFO] Loaded embedding model: {embedding_model_name}")
     
     def chunk_docs(self, documents: List[Any]) -> List[Any]:  # "documents" is a list with the pre-created DOCUMENT data structure
 

@@ -186,6 +186,7 @@ Process finished with exit code 0
 **\*** After parsing, we get each chunk, and embed them.
 **\*** Create **EmbeddingPipeline** class 
 **\*** Initialize the class with chunk size of 1000, overlap of 200
+**\*** Switched from the *Ollama* to the *HuggingFace* embedding model. The embedding will provide more stability, and renders me to use **SentenceTransformer** to chunck data
 
 ### 2-1. Chunk Documents
 ```python=
@@ -215,23 +216,23 @@ def embed_chunks(self, chunks: List[Any]) -> List[Any]:
         print(f"Embeddings shape: {embeddings.shape}")  # returns (x, y), x= amount of chunks, y= the dimension of each chunk
         return embeddings
 ```
-As mentioned in the code above, it removes all metadata drom each chunk, only using the page_content. Then uses the "all-MiniLM-L6-v2" model to embed the page_content (in texts). 
+As mentioned in the code above, it removes all metadata drom each chunk, only using the page_content. Then uses the "all-MiniLM-L6-v2" embedding model from *HuggingFace* to embed the page_content (in texts). 
 ### 2-3. Embedding Full Pipeline
 ```python=
 from typing import List, Any
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer  # For embedding
+from sentence_transformers import SentenceTransformer  # For embedding (with embedding model)
 import numpy as np
 from Data_Ingestion_Pipeline import find_all_files
 
 class EmbeddingPipeline:
 
-    def __init__(self, model_name: str =  "all-MiniLM-L6-v2", chunk_size: int = 1000, chunk_overlap: int = 200):  # Constructor
+    def __init__(self, embedding_model_name: str =  "all-MiniLM-L6-v2", chunk_size: int = 400, chunk_overlap: int = 80):  # Constructor
         
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
-        self.model = SentenceTransformer(model_name)
-        print(f"[INFO] Loaded embedding model: {model_name}")
+        self.model = SentenceTransformer(embedding_model_name)
+        print(f"[INFO] Loaded embedding model: {embedding_model_name}")
     
     def chunk_docs(self, documents: List[Any]) -> List[Any]:  # "documents" is a list with the pre-created DOCUMENT data structure
 
@@ -265,11 +266,12 @@ if __name__ == "__main__":
     embedding = embed_pipe.embed_chunks(chunks)
 
     print(f"Example Embeddings: {embedding[0]}")
+
 ```
 Results:
 ```
 ......
-Loading weights: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 5015.60it/s, Materializing param=pooler.dense.weight]
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 103/103 [00:00<00:00, 4460.04it/s, Materializing param=pooler.dense.weight]
 BertModel LOAD REPORT from: sentence-transformers/all-MiniLM-L6-v2
 Key                     | Status     | Details
 ------------------------+------------+--------
@@ -278,23 +280,23 @@ embeddings.position_ids | UNEXPECTED |
 Notes:
 - UNEXPECTED    :can be ignored when loading from different task/architecture; not ok if you expect identical arch.
 [INFO] Loaded embedding model: all-MiniLM-L6-v2
-Split 17 documents into 10 chunks
-Generating embeddings for 10 chunks...
-Batches: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  7.97it/s] 
-Embeddings shape: (10, 384)
-Example Embeddings: [ 2.18977518e-02 -8.19026551e-04  3.43371677e-04 -7.95536712e-02
- -1.38868801e-02  9.04212892e-03  5.48933372e-02 -1.41972706e-01
- -3.19621898e-02  5.25665767e-02  4.99323159e-02 -3.26099172e-02
-  5.73712364e-02 -2.18379889e-02 -1.14194555e-02  1.94990337e-02
- -2.95626856e-02 -4.42739613e-02  9.88000166e-03  3.45877074e-02
- -4.88435142e-02 -1.05402507e-01 -5.75334765e-02 -2.14974135e-02
-  5.55228889e-02  3.09163742e-02  6.40546009e-02  1.38973659e-02
- -2.47491784e-02  7.98171503e-04 -5.78473061e-02  9.43608209e-03
- -1.49547476e-02  5.45878671e-02 -1.01921307e-02 -8.89268816e-02
-  2.27785092e-02  2.74050161e-02  7.51130795e-03  1.12575971e-01
-  1.65363643e-02 -1.24522060e-01  5.16394852e-03 -1.62559580e-02
-  2.42964067e-02 -2.35713869e-02 -2.55828574e-02 -1.03695765e-01
-  1.51742343e-02 -8.13494176e-02 -5.16008958e-02  5.00273146e-02
- -8.98541659e-02 -4.57129925e-02 -1.14585407e-01 -1.19463436e-01
+Split 17 documents into 19 chunks
+Generating embeddings for 19 chunks...
+Batches: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  5.51it/s] 
+Embeddings shape: (19, 384)
+Example Embeddings: [-9.21084452e-03  3.88275571e-02  1.27735343e-02 -5.38459495e-02
+ -2.59408783e-02 -2.79497635e-03  7.48210549e-02 -1.00793473e-01
+ -7.93170109e-02  5.27221486e-02  4.84477989e-02  5.39705949e-03
+  2.26148274e-02  5.38197905e-03 -4.94310260e-02  2.14767810e-02
+ -3.61346751e-02 -6.90350309e-02  9.81367007e-03  2.19894852e-02
+ -9.25365239e-02 -7.82115012e-02 -5.28241880e-02  5.94564993e-03
+  6.89272881e-02  9.67862830e-03  6.23044111e-02  8.13840609e-03
+ -4.73254248e-02 -2.40997644e-03 -3.54671143e-02  9.45523009e-03
+  3.67199704e-02  4.50931937e-02 -4.45392840e-02 -7.56235272e-02
+  7.12287351e-02  4.60161008e-02  4.83624525e-02  7.07196146e-02
+  4.19389270e-02 -1.15083210e-01  1.83928553e-02 -7.72474520e-03
+  3.79715152e-02 -5.10256737e-02 -1.84535142e-02 -1.17989473e-01
+  5.63323423e-02 -4.90062572e-02 -7.73869157e-02  6.55942857e-02
+ -1.49976894e-01 -3.32234018e-02 -1.11858398e-01 -9.60983634e-02
  ......
 ```
