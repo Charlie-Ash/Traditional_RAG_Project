@@ -78,12 +78,22 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for pdf_file in pdf_files:  # Load all PDF files
+
         print(f"Loading PDF file[{file_counter}]: {pdf_file}")
+
         try:
+
             loader = PyPDFLoader(str(pdf_file))
-            loaded = loader.load() # List of "Documents" datatype
+            loaded = loader.load() # List of "Documents" datatype (it's a list since the loader often times splits the file into chunks on its own)
             print(f"Loaded {len(loaded)} PDF docs from {pdf_file}")
+            
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = pdf_file.name()
+                doc.metadata["path"] = str(pdf_file.absolute())
+
             documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {pdf_file} PDF file: {e.with_traceback()}")
 
@@ -95,12 +105,22 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for xlsx_file in xlsx_files:  # Load all Excel files
+
         print(f"Loading Excel file[{file_counter}]: {xlsx_file}")
+
         try:
+
             loader = UnstructuredExcelLoader(str(xlsx_file))
             loaded = loader.load() # List of "Documents" datatype
             print(f"Loaded {len(loaded)} Excel docs from {xlsx_file}")
+
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = xlsx_file.name()
+                doc.metadata["path"] = str(xlsx_file.absolute())
+
             documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {xlsx_file} Excel file: {e.with_traceback()}")
 
@@ -112,12 +132,23 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for txt_file in txt_files:  # Load all Excel files
+        
         print(f"Loading Txt file[{file_counter}]: {txt_file}")
+
         try:
+
             loader = TextLoader(str(txt_file))
             loaded = loader.load() # List of "Documents" datatype
             print(f"Loaded {len(loaded)} Txt docs from {txt_file}")
             documents.extend(loaded)
+
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = txt_file.name()
+                doc.metadata["path"] = str(txt_file.absolute())
+
+            documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {txt_file} Txt file: {e.with_traceback()}")
 
@@ -234,7 +265,13 @@ class EmbeddingPipeline:
         self.model = SentenceTransformer(embedding_model_name)
         print(f"[INFO] Loaded embedding model: {embedding_model_name}")
     
-    def chunk_docs(self, documents: List[Any]) -> List[Any]:  # "documents" is a list with the pre-created DOCUMENT data structure
+    def chunk_docs(self, documents: List[Any]) -> List[Any]:
+
+        '''
+        "documents" is a list of list of the pre-created DOCUMENT data structure (double list)
+        The amount of items in "documents" is the amount of files in the "data" folder
+        Each item representing a file, an each item (a list) will have different amounts of chunks, depending on the loader during data ingestion.
+        '''
 
         splitter = RecursiveCharacterTextSplitter(  # Default Separators: ["\n\n", "\n", " ", ""]
 
@@ -244,7 +281,18 @@ class EmbeddingPipeline:
 
         )
 
-        chunks = splitter.split_documents(documents)  # "chunks" is still a list with DOCUMENT data structure, but now formatted
+        chunks = []  # "chunks" is still a list with DOCUMENT data structure, but now formatted
+
+        for doc in documents:
+
+            splitted_chunks = splitter.split_documents([doc])
+
+            for i, chunk in splitted_chunks:  # Adding metadata for each chunk
+
+                chunk.metadata["chunk_index"] = i
+                chunk.metadata["source"] = doc.metadata.get("source")
+                chunk.metadata["path"] = doc.metadata.get("path")
+
         print(f"Split {len(documents)} documents into {len(chunks)} chunks")
         return chunks
 
