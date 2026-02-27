@@ -1,0 +1,324 @@
+Here is a detailed, pure-text 2026 PC build guide. I will choose specific, modern parts and then walk you through the physical assembly in careful detail.
+
+This is written as if you are building it yourself at home for the first time.
+
+---
+
+## 2026 Balanced Performance PC Build
+
+Target Use:
+
+* 1440p high-refresh gaming
+* Programming and multitasking
+* Light content creation
+* Strong upgrade path
+
+---
+
+## Selected Parts (2026 Practical Build)
+
+CPU
+AMD Ryzen 7 9700X (Zen 5, AM5 platform)
+
+Motherboard
+MSI B650 Tomahawk WiFi (AM5, DDR5, PCIe 4.0/5.0 support)
+
+RAM
+32GB (2x16GB) DDR5-6000 CL30 (EXPO supported)
+
+GPU
+NVIDIA GeForce RTX 5070 (mid-high tier 1440p card)
+
+Storage
+2TB NVMe PCIe 4.0 SSD (e.g., WD Black SN850X)
+
+Power Supply
+750W 80+ Gold, ATX 3.1 compatible (native 12V-2x6 cable for modern GPUs)
+
+Case
+Fractal Design Meshify 2 (high airflow mid-tower)
+
+CPU Cooler
+Thermalright Peerless Assassin 120 SE (high performance air cooler)
+
+Why this combination:
+
+* AM5 ensures long upgrade support.
+* 32GB RAM is the practical 2026 standard.
+* 2TB storage avoids immediate upgrades.
+* 750W PSU gives headroom and stability.
+* High airflow case keeps thermals under control.
+
+---
+
+## Before You Start
+
+Tools:
+
+* #2 magnetic Phillips screwdriver
+* Small container for screws
+* Isopropyl alcohol (in case you need to reapply paste)
+* Thermal paste (if cooler does not include it)
+* Zip ties for cable management
+
+Workspace:
+
+* Large flat table
+* No carpet
+* Good lighting
+* Keep component boxes nearby
+
+Anti-static precautions:
+
+* Touch a grounded metal object before handling parts.
+* Avoid building on carpet.
+* Do not touch CPU pins or motherboard contacts.
+
+---
+
+## Step 1 – Prepare the Case
+
+1. Remove both side panels.
+2. Lay the case flat on its side (motherboard tray facing up).
+3. Locate the motherboard standoff positions.
+4. Install standoffs that match ATX layout (usually pre-installed).
+5. Confirm no extra standoffs are installed where there are no screw holes. Extra standoffs can short the board.
+
+Set the case aside.
+
+---
+
+## Step 2 – Install CPU onto Motherboard
+
+Place the motherboard on its box.
+
+1. Lift the AM5 socket retention arm.
+2. Open the socket cover.
+3. Hold the CPU by the edges.
+4. Align the golden triangle on the CPU with the triangle on the socket.
+5. Gently lower the CPU into place.
+   Do not press. It should sit flat.
+6. Lower the retention frame.
+7. Lock the retention arm down.
+
+If it does not drop in easily, stop and check alignment.
+
+---
+
+## Step 3 – Install the M.2 SSD
+
+1. Locate the primary M.2 slot (usually labeled M2_1).
+2. Remove the heatsink screw.
+3. Insert the SSD at about a 30-degree angle.
+4. Push it down flat.
+5. Secure it with the screw.
+6. Reinstall the heatsink (remove plastic film first).
+
+---
+
+## Step 4 – Install RAM
+
+Check the motherboard manual. For two sticks, use slots A2 and B2 (usually the second and fourth from the CPU).
+
+1. Open the latches.
+2. Align the notch in the RAM with the slot.
+3. Press down firmly until both sides click.
+
+You must hear/feel the click. Incomplete seating is a common mistake.
+
+---
+
+## Step 5 – Install CPU Cooler
+
+If your cooler has pre-applied thermal paste, skip paste application.
+
+If not:
+
+1. Apply a pea-sized dot of thermal paste in the center of the CPU.
+2. Install the AM5 mounting brackets (if required by your cooler).
+3. Remove the cooler fan(s) if pre-attached.
+4. Lower the heatsink onto the CPU.
+5. Tighten screws gradually in a cross pattern.
+6. Reattach fans.
+7. Plug the fan cable into CPU_FAN header.
+
+Do not overtighten.
+
+---
+
+## Step 6 – Install the Power Supply
+
+1. Insert PSU into bottom compartment.
+2. Ensure the fan faces downward if the case has bottom ventilation.
+3. Secure with four screws.
+
+Connect and pre-route:
+
+* 24-pin motherboard cable
+* 8-pin CPU cable
+* GPU cable (12V-2x6 or 8-pin)
+* SATA power if needed
+
+Route cables behind the motherboard tray.
+
+---
+
+## Step 7 – Install the Motherboard into the Case
+
+1. Check if I/O shield is pre-attached (most modern boards are).
+2. Lower the motherboard into the case.
+3. Align ports with rear cutout.
+4. Align screw holes with standoffs.
+5. Secure with screws. Tighten snug but not excessive.
+
+---
+
+## Step 8 – Connect Motherboard Power
+
+Connect:
+
+* 24-pin main power
+* 8-pin CPU power (top-left of motherboard)
+
+Ensure clips click fully into place.
+
+---
+
+## Step 9 – Install the GPU
+
+1. Remove the required rear expansion slot covers.
+2. Unlock PCIe slot latch.
+3. Insert GPU straight into the top PCIe x16 slot.
+4. Press until it clicks.
+5. Secure with screws.
+6. Connect GPU power cable firmly.
+
+Modern GPU cables must be fully inserted. Incomplete insertion can cause overheating.
+
+---
+
+## Step 10 – Connect Front Panel Cables
+
+These small cables connect to bottom of motherboard:
+
+* Power switch
+* Reset switch
+* Power LED
+* HDD LED
+* Front USB
+* Front audio
+
+Use the motherboard manual diagram carefully. This step requires patience.
+
+---
+
+## Step 11 – Connect Case Fans
+
+* Front fans → SYS_FAN headers
+* Rear fan → SYS_FAN header
+* Use splitters if necessary
+
+Airflow rule:
+Front = intake
+Rear/top = exhaust
+
+---
+
+## Step 12 – Cable Management
+
+1. Route cables behind motherboard tray.
+2. Use zip ties.
+3. Keep airflow path clear from front intake to rear exhaust.
+4. Avoid cables touching fans.
+
+Clean cable management improves airflow and future maintenance.
+
+---
+
+## Step 13 – First Boot
+
+Connect:
+
+* Monitor (plug into GPU, not motherboard)
+* Keyboard
+* Power cable
+
+Turn on PSU switch.
+Press case power button.
+
+If successful:
+
+* Fans spin
+* Display shows motherboard logo
+
+If no display:
+
+* Reseat RAM
+* Check GPU power
+* Check monitor cable
+
+---
+
+## Step 14 – Enter BIOS
+
+Press DEL during boot.
+
+Inside BIOS:
+
+1. Verify CPU temperature (should be 30-50°C idle).
+2. Confirm RAM shows 32GB.
+3. Enable EXPO/XMP profile.
+4. Confirm SSD is detected.
+5. Save and exit.
+
+---
+
+## Step 15 – Install Operating System
+
+1. Insert Windows 11 USB installer.
+2. Boot from USB.
+3. Choose your SSD.
+4. Install OS.
+
+After installation:
+
+* Install chipset drivers
+* Install GPU drivers
+* Run Windows Update
+
+---
+
+## Post-Build Checks
+
+* Monitor CPU and GPU temperatures under load.
+* Run a stress test (Cinebench, 3DMark).
+* Ensure stable performance.
+* Update motherboard BIOS if needed.
+
+---
+
+## Common Mistakes to Avoid
+
+* Forgetting motherboard standoffs.
+* Not plugging in CPU power cable.
+* Plugging monitor into motherboard instead of GPU.
+* Using too much thermal paste.
+* Forgetting to enable EXPO/XMP.
+
+---
+
+## Expected Performance (2026)
+
+With this system:
+
+* 1440p Ultra gaming at high FPS
+* Smooth multitasking
+* Strong upgrade headroom
+* 4-5 year usability without major upgrades
+
+If you want, I can also create:
+
+* A lower budget version
+* A high-end 4K build
+* A silent/low-noise build
+* Or a build optimized specifically for AI/LLM work, since I know you've been exploring local models and RAG systems

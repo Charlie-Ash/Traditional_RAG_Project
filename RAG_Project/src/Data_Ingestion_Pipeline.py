@@ -22,12 +22,22 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for pdf_file in pdf_files:  # Load all PDF files
+
         print(f"Loading PDF file[{file_counter}]: {pdf_file}")
+
         try:
+
             loader = PyPDFLoader(str(pdf_file))
-            loaded = loader.load() # List of "Documents" datatype
+            loaded = loader.load() # List of "Documents" datatype (it's a list since the loader often times splits the file into chunks on its own)
             print(f"Loaded {len(loaded)} PDF docs from {pdf_file}")
+            
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = pdf_file.name()
+                doc.metadata["path"] = str(pdf_file.absolute())
+
             documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {pdf_file} PDF file: {e.with_traceback()}")
 
@@ -39,12 +49,22 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for xlsx_file in xlsx_files:  # Load all Excel files
+
         print(f"Loading Excel file[{file_counter}]: {xlsx_file}")
+
         try:
+
             loader = UnstructuredExcelLoader(str(xlsx_file))
             loaded = loader.load() # List of "Documents" datatype
             print(f"Loaded {len(loaded)} Excel docs from {xlsx_file}")
+
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = xlsx_file.name()
+                doc.metadata["path"] = str(xlsx_file.absolute())
+
             documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {xlsx_file} Excel file: {e.with_traceback()}")
 
@@ -56,12 +76,23 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
     file_counter = 0
     for txt_file in txt_files:  # Load all Excel files
+        
         print(f"Loading Txt file[{file_counter}]: {txt_file}")
+
         try:
+
             loader = TextLoader(str(txt_file))
             loaded = loader.load() # List of "Documents" datatype
             print(f"Loaded {len(loaded)} Txt docs from {txt_file}")
             documents.extend(loaded)
+
+            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
+
+                doc.metadata["source"] = txt_file.name()
+                doc.metadata["path"] = str(txt_file.absolute())
+
+            documents.extend(loaded)
+
         except Exception as e:
             print(f"[ERROR] Error loading {txt_file} Txt file: {e.with_traceback()}")
 

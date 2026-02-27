@@ -13,7 +13,13 @@ class EmbeddingPipeline:
         self.model = SentenceTransformer(embedding_model_name)
         print(f"[INFO] Loaded embedding model: {embedding_model_name}")
     
-    def chunk_docs(self, documents: List[Any]) -> List[Any]:  # "documents" is a list with the pre-created DOCUMENT data structure
+    def chunk_docs(self, documents: List[Any]) -> List[Any]:
+
+        '''
+        "documents" is a list of list of the pre-created DOCUMENT data structure (double list)
+        The amount of items in "documents" is the amount of files in the "data" folder
+        Each item representing a file, an each item (a list) will have different amounts of chunks, depending on the loader during data ingestion.
+        '''
 
         splitter = RecursiveCharacterTextSplitter(  # Default Separators: ["\n\n", "\n", " ", ""]
 
@@ -23,7 +29,18 @@ class EmbeddingPipeline:
 
         )
 
-        chunks = splitter.split_documents(documents)  # "chunks" is still a list with DOCUMENT data structure, but now formatted
+        chunks = []  # "chunks" is still a list with DOCUMENT data structure, but now formatted
+
+        for doc in documents:
+
+            splitted_chunks = splitter.split_documents([doc])
+
+            for i, chunk in splitted_chunks:  # Adding metadata for each chunk
+
+                chunk.metadata["chunk_index"] = i
+                chunk.metadata["source"] = doc.metadata.get("source")
+                chunk.metadata["path"] = doc.metadata.get("path")
+
         print(f"Split {len(documents)} documents into {len(chunks)} chunks")
         return chunks
 
