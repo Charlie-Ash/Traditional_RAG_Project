@@ -30,16 +30,20 @@ class EmbeddingPipeline:
         )
 
         chunks = []  # "chunks" is still a list with DOCUMENT data structure, but now formatted
+        global_chunk_id = 0  # Will be used in as the chunk index GLOBALLY, to avoid PDF files duplicating indexes
 
         for doc in documents:
 
             splitted_chunks = splitter.split_documents([doc])
 
-            for i, chunk in splitted_chunks:  # Adding metadata for each chunk
+            for chunk in splitted_chunks:  # Adding metadata for each chunk
 
-                chunk.metadata["chunk_index"] = i
+                chunk.metadata["chunk_index"] = global_chunk_id
                 chunk.metadata["source"] = doc.metadata.get("source")
                 chunk.metadata["path"] = doc.metadata.get("path")
+
+                chunks.append(chunk)
+                global_chunk_id += 1
 
         print(f"Split {len(documents)} documents into {len(chunks)} chunks")
         return chunks

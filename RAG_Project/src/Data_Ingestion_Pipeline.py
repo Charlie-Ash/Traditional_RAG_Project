@@ -33,13 +33,13 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
             
             for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
 
-                doc.metadata["source"] = pdf_file.name()
+                doc.metadata["source"] = pdf_file.name
                 doc.metadata["path"] = str(pdf_file.absolute())
 
             documents.extend(loaded)
 
         except Exception as e:
-            print(f"[ERROR] Error loading {pdf_file} PDF file: {e.with_traceback()}")
+            print(f"[ERROR] Error loading {pdf_file} PDF file: {e}")
 
         file_counter = file_counter + 1
 
@@ -60,13 +60,13 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
 
             for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
 
-                doc.metadata["source"] = xlsx_file.name()
+                doc.metadata["source"] = xlsx_file.name
                 doc.metadata["path"] = str(xlsx_file.absolute())
 
             documents.extend(loaded)
 
         except Exception as e:
-            print(f"[ERROR] Error loading {xlsx_file} Excel file: {e.with_traceback()}")
+            print(f"[ERROR] Error loading {xlsx_file} Excel file: {e}")
 
         file_counter = file_counter + 1
 
@@ -84,17 +84,16 @@ def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is ri
             loader = TextLoader(str(txt_file))
             loaded = loader.load() # List of "Documents" datatype
             print(f"Loaded {len(loaded)} Txt docs from {txt_file}")
-            documents.extend(loaded)
 
             for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
 
-                doc.metadata["source"] = txt_file.name()
+                doc.metadata["source"] = txt_file.name
                 doc.metadata["path"] = str(txt_file.absolute())
 
             documents.extend(loaded)
 
         except Exception as e:
-            print(f"[ERROR] Error loading {txt_file} Txt file: {e.with_traceback()}")
+            print(f"[ERROR] Error loading {txt_file} Txt file: {e}")
 
         file_counter = file_counter + 1
 
