@@ -2,6 +2,7 @@
 
 ### Pipelines
 **\*** Data Ingestion Pipeline
+**\*** Embedding + Chunking
 **\*** User Query + Prompt
 **\*** Retreival Pipeline
 
@@ -11,7 +12,7 @@
 **\*** pdf, excel, html...
 **\*** Parsing -> Document structure (via loaders)
 
-```python=
+```python
 # LangChain Document Data structure
 from langchain_core.documents import Document
 
@@ -31,7 +32,7 @@ doc=Document(
 
 ### 1-2. Directory Loader Structure
 **\*** Assists with loading many files in the directory
-```python=
+```python
 # Directory Loader
 from langchain_community.document_loaders import DirectoryLoader
 
@@ -49,121 +50,11 @@ documents=dir_loader.load()
 (*"documents"* will return a list of ***Document*** structures of all the specified files in the directory)
 
 ### 1-3. Data File
-![image](https://hackmd.io/_uploads/SyMxsMvP-l.png)
+![image](https://hackmd.io/_uploads/H10gJNWFWx.png)
+The files above are default files to feed into the RAG pipeline, it can be swapped out for other PDF, TXT or XLSX files.
 
 
-### 1-4. Data Ingestion Full Pipeline
-```python=
-from pathlib import Path
-from typing import List, Any
-from langchain_core.documents import Document
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, CSVLoader
-from langchain_community.document_loaders import Docx2txtLoader
-from langchain_community.document_loaders.excel import UnstructuredExcelLoader
-from langchain_community.document_loaders import JSONLoader
-
-def find_all_files(directory : str) -> List[Any]:  # Assumes the directory is right under the project file
-
-    # Uses project's "data" file
-    BASE_DIR = Path(__file__).resolve()
-    SOURCE_DIR = BASE_DIR.parent
-    PROJECT_DIR = SOURCE_DIR.parent
-    data_path = PROJECT_DIR / directory  # Path-joining
-    print(f"Data Path: {data_path}")
-    documents = []
-
-    # PDF files
-    pdf_files = list(data_path.glob("**/*.pdf"))  #  Any file after data that is "pdf"
-    print(f"Found {len(pdf_files)} PDF files: {[str(f) for f in pdf_files]}")
-
-    file_counter = 0
-    for pdf_file in pdf_files:  # Load all PDF files
-
-        print(f"Loading PDF file[{file_counter}]: {pdf_file}")
-
-        try:
-
-            loader = PyPDFLoader(str(pdf_file))
-            loaded = loader.load() # List of "Documents" datatype (it's a list since the loader often times splits the file into chunks on its own)
-            print(f"Loaded {len(loaded)} PDF docs from {pdf_file}")
-            
-            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
-
-                doc.metadata["source"] = pdf_file.name()
-                doc.metadata["path"] = str(pdf_file.absolute())
-
-            documents.extend(loaded)
-
-        except Exception as e:
-            print(f"[ERROR] Error loading {pdf_file} PDF file: {e.with_traceback()}")
-
-        file_counter = file_counter + 1
-
-    # Excel files
-    xlsx_files = list(data_path.glob("**/*.xlsx"))  #  Any file after data that is "pdf"
-    print(f"Found {len(xlsx_files)} Excel files: {[str(f) for f in xlsx_files]}")
-
-    file_counter = 0
-    for xlsx_file in xlsx_files:  # Load all Excel files
-
-        print(f"Loading Excel file[{file_counter}]: {xlsx_file}")
-
-        try:
-
-            loader = UnstructuredExcelLoader(str(xlsx_file))
-            loaded = loader.load() # List of "Documents" datatype
-            print(f"Loaded {len(loaded)} Excel docs from {xlsx_file}")
-
-            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
-
-                doc.metadata["source"] = xlsx_file.name()
-                doc.metadata["path"] = str(xlsx_file.absolute())
-
-            documents.extend(loaded)
-
-        except Exception as e:
-            print(f"[ERROR] Error loading {xlsx_file} Excel file: {e.with_traceback()}")
-
-        file_counter = file_counter + 1
-
-    # Txt files
-    txt_files = list(data_path.glob("**/*.txt"))  #  Any file after data that is "pdf"
-    print(f"Found {len(txt_files)} Txt files: {[str(f) for f in txt_files]}")
-
-    file_counter = 0
-    for txt_file in txt_files:  # Load all Excel files
-        
-        print(f"Loading Txt file[{file_counter}]: {txt_file}")
-
-        try:
-
-            loader = TextLoader(str(txt_file))
-            loaded = loader.load() # List of "Documents" datatype
-            print(f"Loaded {len(loaded)} Txt docs from {txt_file}")
-            documents.extend(loaded)
-
-            for doc in loaded:  # Adding metadatas to the DOCUMENT data structure
-
-                doc.metadata["source"] = txt_file.name()
-                doc.metadata["path"] = str(txt_file.absolute())
-
-            documents.extend(loaded)
-
-        except Exception as e:
-            print(f"[ERROR] Error loading {txt_file} Txt file: {e.with_traceback()}")
-
-        file_counter = file_counter + 1
-
-    return documents
-
-
-# Test usage
-if __name__ == "__main__":
-
-    documents = find_all_files("data")
-    for f in documents:
-        print("File aquired: " + f.metadata["source"])
-```
+### 1-4. Results Running Data_Ingestion_Pipeline.py
 Results:
 ```
 Data Path: C:\Users\USER\PycharmProjects\Traditional_RAG_Project\RAG_Project\data
@@ -220,7 +111,7 @@ Process finished with exit code 0
 **\*** Switched from the *Ollama* to the *HuggingFace* embedding model. The embedding will provide more stability, and renders me to use **SentenceTransformer** to chunck data
 
 ### 2-1. Chunk Documents
-```python=
+```python
 def chunk_docs(self, documents: List[Any]) -> List[Any]: # "documents" is a list with the pre-created DOCUMENT data structure
 
 
@@ -238,7 +129,7 @@ def chunk_docs(self, documents: List[Any]) -> List[Any]: # "documents" is a list
 ```
 The function's  main goal is to split infomation into chunks, which are all small peices of **Document** data structure.
 ### 2-2. Embed Documents
-```python=
+```python
 def embed_chunks(self, chunks: List[Any]) -> List[Any]:
 
         texts = [chunk.page_content for chunk in chunks]  # Removed the meta data from all the document object (only kept the page content)
@@ -248,74 +139,7 @@ def embed_chunks(self, chunks: List[Any]) -> List[Any]:
         return embeddings
 ```
 As mentioned in the code above, it removes all metadata drom each chunk, only using the page_content. Then uses the "all-MiniLM-L6-v2" embedding model from *HuggingFace* to embed the page_content (in texts). 
-### 2-3. Embedding Full Pipeline
-```python=
-from typing import List, Any
-from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer  # For embedding (with embedding model)
-import numpy as np
-from Data_Ingestion_Pipeline import find_all_files
-
-class EmbeddingPipeline:
-
-    def __init__(self, embedding_model_name: str =  "all-MiniLM-L6-v2", chunk_size: int = 400, chunk_overlap: int = 80):  # Constructor
-        
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
-        self.model = SentenceTransformer(embedding_model_name)
-        print(f"[INFO] Loaded embedding model: {embedding_model_name}")
-    
-    def chunk_docs(self, documents: List[Any]) -> List[Any]:
-
-        '''
-        "documents" is a list of list of the pre-created DOCUMENT data structure (double list)
-        The amount of items in "documents" is the amount of files in the "data" folder
-        Each item representing a file, an each item (a list) will have different amounts of chunks, depending on the loader during data ingestion.
-        '''
-
-        splitter = RecursiveCharacterTextSplitter(  # Default Separators: ["\n\n", "\n", " ", ""]
-
-            chunk_size = self.chunk_size,
-            chunk_overlap = self.chunk_overlap,
-            length_function = len
-
-        )
-
-        chunks = []  # "chunks" is still a list with DOCUMENT data structure, but now formatted
-
-        for doc in documents:
-
-            splitted_chunks = splitter.split_documents([doc])
-
-            for i, chunk in splitted_chunks:  # Adding metadata for each chunk
-
-                chunk.metadata["chunk_index"] = i
-                chunk.metadata["source"] = doc.metadata.get("source")
-                chunk.metadata["path"] = doc.metadata.get("path")
-
-        print(f"Split {len(documents)} documents into {len(chunks)} chunks")
-        return chunks
-
-    def embed_chunks(self, chunks: List[Any]) -> List[Any]:
-
-        texts = [chunk.page_content for chunk in chunks]  # Removed the meta data from all the document object (only kept the page content)
-        print(f"Generating embeddings for {len(texts)} chunks...")
-        embeddings = self.model.encode(texts, show_progress_bar=True)
-        print(f"Embeddings shape: {embeddings.shape}")  # returns (x, y), x= amount of chunks, y= the dimension of each chunk
-        return embeddings
-    
-
-# Test use
-if __name__ == "__main__":
-
-    docs = find_all_files("data")
-    embed_pipe = EmbeddingPipeline()
-    chunks = embed_pipe.chunk_docs(docs)
-    embedding = embed_pipe.embed_chunks(chunks)
-
-    print(f"Example Embeddings: {embedding[0]}")
-
-```
+### 2-3. Results Running Embedding_Pipeline.py
 Results:
 ```
 ......
@@ -347,4 +171,72 @@ Example Embeddings: [-9.21084452e-03  3.88275571e-02  1.27735343e-02 -5.38459495
   5.63323423e-02 -4.90062572e-02 -7.73869157e-02  6.55942857e-02
  -1.49976894e-01 -3.32234018e-02 -1.11858398e-01 -9.60983634e-02
  ......
+```
+
+## 3. Vector Storage
+### 3-1. ChromaDB Collection
+In this RAG pipeline, after all vectors have been successfully chunked, it is then stored in ChromaDB's collection to better control its flow.
+```python
+def __init__(self):
+
+        self.chromaDB_client = chromadb.Client(Settings(persist_directory="./chroma_db"))  # Where the data base is, will still exist in this file after code executes
+
+        # Deleting a collection without it existing causes error, hence the try/except
+        try:
+            self.chromaDB_client.delete_collection("the_collection")  # Deletes the collection created from the previous run (in ./chroma_db)
+            print("Previous collection deleted. Creating a new one...")
+        except Exception:
+            print("No existing collection found. Creating a new one...")
+
+        self.collection = self.chromaDB_client.get_or_create_collection(name= "the_collection")
+
+        print("ChromeDB collection created.")
+```
+What is added to the collection is as followed:
+**\*** **IDs:** to keep track of each chunk's source and global index
+**\*** **Documents:** the page_content of each chunk
+**\*** **Metadatas:** the entirety of each chunk's metadata
+**\*** **Embeddings:** the vector values]
+```python
+def add_vector(self, chunks: List[Any], embeddings: np.ndarray):
+
+        if len(chunks) != embeddings.shape[0]:  # Quick check
+            raise ValueError("Chunks and Embeddings exist mismatch.")
+
+        chunk_ids = [f"chunk_{chunk.metadata.get('chunk_index')}_from_{chunk.metadata.get('source')}" for chunk in chunks]  # Using the chunk's ID and source as the ID stored in the DB (both from the metadata)
+        documents = [chunk.page_content for chunk in chunks]  # Page contents as the documents stored in the DB
+        metadatas = [chunk.metadata for chunk in chunks]  # Full metadata
+
+        self.collection.add(
+            ids= chunk_ids,
+            embeddings= embeddings,
+            documents= documents,
+            metadatas= metadatas
+        )
+
+        print(f"Added {embeddings.shape} size embeddings and its properties into ChromaDB")
+```
+### 3-2. Query
+This function will take the user's query' embeddings, calculate the closest value embedding from the entire collection, and returns the top result and its attributes in the form of a dictionary.
+```python
+# Return type's format
+top_docs = {
+
+    "id": results["ids"][0],
+    "documents": results["documents"][0],
+    "metadatas": results["metadatas"][0],
+    "distances": results["distances"][0]
+
+}
+    
+return top_docs
+```
+### 3-3. Results Running Vector_Storing.py
+Results:
+```
+...
+No existing collection found. Creating a new one...
+ChromeDB collection created.
+Added (139, 384) size embeddings and its properties into ChromaDB
+Completed adding vectors into DB
 ```
