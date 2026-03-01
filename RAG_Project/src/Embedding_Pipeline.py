@@ -1,7 +1,6 @@
 from typing import List, Any
 from langchain_classic.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer  # For embedding (with embedding model)
-import numpy as np
 from Data_Ingestion_Pipeline import find_all_files
 
 class EmbeddingPipeline:

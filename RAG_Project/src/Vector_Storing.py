@@ -10,7 +10,8 @@ class VectorStorage:
     
     def __init__(self):
 
-        self.chromaDB_client = chromadb.Client(Settings(persist_directory="./chroma_db"))  # Where the data base is, will still exist in this file after code executes
+        # Where the data base is, will still exist in this file after code executes
+        self.chromaDB_client = chromadb.Client(Settings(persist_directory="./chroma_db", is_persistent= True))  
 
         # Deleting a collection without it existing causes error, hence the try/except
         try:
