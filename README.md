@@ -245,11 +245,11 @@ Completed adding vectors into DB
 **\*** Call the *llama3.1* model
 **\*** Pass in a final prompt in the form that includes:
 
-:::info
+
 1. User Query *(ipnut_text)*: The question the user has in regards of the files.
 2. System Prompt *(system_promp)*: Deafault rules the LLM must follow 
 3. Context *(context_clue)*: By comparing the user's query's embedding with the DB, the context would be the *page_content* of the most similar chunk.
-::: 
+
 
 ```python
 final_prompt = f"""
