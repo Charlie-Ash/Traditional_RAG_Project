@@ -240,3 +240,45 @@ ChromeDB collection created.
 Added (139, 384) size embeddings and its properties into ChromaDB
 Completed adding vectors into DB
 ```
+## 4. Main Function: User Query
+### 4-1. Structure
+**\*** Call the *llama3.1* model
+**\*** Pass in a final prompt in the form that includes:
+:::info
+1. User Query *(ipnut_text)*: The question the user has in regards of the files.
+2. System Prompt *(system_promp)*: Deafault rules the LLM must follow 
+3. Context *(context_clue)*: By comparing the user's query's embedding with the DB, the context would be the *page_content* of the most similar chunk.
+::: 
+```python
+final_prompt = f"""
+        System: {system_prompt}
+        User Query: {input_text}
+        Context: {context_clue}
+"""
+```
+The final prompt would be entirely passed into the LLM.
+### 4-2. Results of running the entire pipeline
+File passed in:
+![image](https://hackmd.io/_uploads/HyWql-7FZx.png)
+Results:
+```
+...
+Added (139, 384) size embeddings and its properties into ChromaDB
+>>> Can you show me how to solve the first question of the linear algebra final?
+ANSWER: 
+To solve the first question, I need to look at Part I, which starts with question 1.
+
+The question is: "Show that if A is a symmetric nonsingular matrix, then A^−1 is also symmetric."
+
+This is an algebraic proof problem, and it appears we can approach it by leveraging properties of symmetric matrices. Specifically, since A is both symmetric and nonsingular (invertible), this should lead us to the conclusion that its inverse A^-1 will share similar characteristics.
+
+To prove it's symmetric:
+
+- We begin with the definition of a symmetric matrix: A = A^T.
+- Since A is nonsingular, we know its inverse exists. This implies the existence of A^-1.
+- Recall that for any square matrices X and Y, if XY = I (where I is the identity matrix), then YX also equals I (since matrix multiplication is not commutative in general but does hold when dealing with inverses).
+- We can manipulate this definition to show that A^-1 * A = A * A^-1 = I
+- Because A is symmetric, we know A^T * A = A * A^T. If we replace each instance of A with its transpose (A^T) and multiply both sides by the inverse, then we arrive at the result that the product of A^-1 and itself yields the identity matrix when multiplied together in reverse order.
+
+This reasoning should lead us to conclude that if A is a symmetric nonsingular matrix, its inverse will be symmetric as well.
+```
